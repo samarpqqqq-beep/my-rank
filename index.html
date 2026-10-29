@@ -25,12 +25,13 @@
         h2 { color: #66fcf1; margin-top: 0; letter-spacing: 1px; }
         .rank-title { font-size: 24px; font-weight: bold; color: #45a29e; margin: 15px 0; }
         .wins { font-size: 16px; color: #c5c6c7; }
+        .btn-container { margin-top: 15px; }
         .btn {
             background: #66fcf1; border: none; color: #0b0c10;
-            padding: 10px 18px; margin-top: 15px; font-weight: bold;
-            border-radius: 5px; cursor: pointer; transition: 0.2s;
+            padding: 8px 14px; margin: 4px; font-weight: bold;
+            border-radius: 5px; cursor: pointer;
         }
-        .btn:hover { background: #45a29e; color: #fff; }
+        .btn-reset { background: #ff4d4d; color: #fff; }
     </style>
 </head>
 <body>
@@ -39,11 +40,31 @@
     <h2>BOT MATCH RANKING</h2>
     <div class="rank-title" id="rankDisplay">Silver I</div>
     <div class="wins">Total Wins: <span id="winCount">0</span></div>
-    <button class="btn" onclick="addWin()">+ Record Win</button>
+    
+    <div class="btn-container">
+        <button class="btn" onclick="addWin()">+ Record Win</button>
+        <button class="btn btn-reset" onclick="resetWins()">Reset Stats</button>
+    </div>
 </div>
 
 <script>
     let wins = parseInt(localStorage.getItem('online_bot_wins')) || 0;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Handle ?reset=1 from URL parameter
+    if (urlParams.get('reset') === '1') {
+        wins = 0;
+        localStorage.setItem('online_bot_wins', 0);
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Handle ?addwin=1 from URL parameter
+    if (urlParams.get('addwin') === '1') {
+        wins++;
+        localStorage.setItem('online_bot_wins', wins);
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
     function getRank(w) {
         if (w >= 50) return "Global Elite";
@@ -61,6 +82,12 @@
 
     function addWin() {
         wins++;
+        updateUI();
+    }
+
+    function resetWins() {
+        wins = 0;
+        localStorage.removeItem('online_bot_wins');
         updateUI();
     }
 
